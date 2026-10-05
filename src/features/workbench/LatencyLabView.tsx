@@ -144,6 +144,7 @@ export default function LatencyLabView() {
               graph={vm.graphAnalysis}
               onAdd={vm.addNode}
               onPatch={vm.patchNode}
+              onPatchMany={vm.patchManyNodes}
               onDelete={vm.deleteNode}
               onDependency={vm.setNodeDependency}
             />

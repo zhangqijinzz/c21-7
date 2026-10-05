@@ -1,3 +1,7 @@
+import {
+  applyNodeAdjustments,
+  type NodeAdjustment,
+} from "../../shared/domain/impact";
 import { analyzeGraph, updateNode } from "../../shared/domain/graph";
 import type { GraphAnalysis } from "../../shared/domain/graph";
 import type { LatencyProject, RequestNode } from "../../shared/domain/types";
@@ -81,6 +85,13 @@ export function toggleDependency(
   return cycle.length
     ? { project, error: "这条连线会形成循环依赖，已撤销" }
     : { project: next };
+}
+
+export function patchNodesTogether(
+  project: LatencyProject,
+  adjustments: NodeAdjustment[],
+): { project: LatencyProject; errors: string[] } {
+  return applyNodeAdjustments(project, adjustments);
 }
 
 export function setConcurrency(

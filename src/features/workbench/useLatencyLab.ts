@@ -13,6 +13,7 @@ import {
 } from "../projects/projectViewModel";
 import {
   addRequestNode,
+  patchNodesTogether,
   patchRequestNode,
   removeRequestNode,
   setConcurrency,
@@ -28,6 +29,7 @@ import {
 } from "../scenarios/scenarioViewModel";
 import { removeProject, updateProject } from "../projects/projectViewModel";
 import { simulateProject } from "../../shared/domain/simulation";
+import type { NodeAdjustment } from "../../shared/domain/impact";
 
 export type LabStatus =
   "loading" | "ready" | "editing" | "simulating" | "error" | "completed";
@@ -190,6 +192,16 @@ export function useLatencyLab() {
     },
     [activeProject, editProject],
   );
+  const patchManyNodes = useCallback(
+    (adjustments: NodeAdjustment[]): string[] => {
+      if (!activeProject) return ["没有找到当前项目"];
+      const outcome = patchNodesTogether(activeProject, adjustments);
+      if (outcome.errors.length) return outcome.errors;
+      editProject(outcome.project);
+      return [];
+    },
+    [activeProject, editProject],
+  );
   const deleteNode = useCallback(
     (id: string) => {
       if (activeProject) editProject(removeRequestNode(activeProject, id));
@@ -287,6 +299,7 @@ export function useLatencyLab() {
     deleteProject,
     addNode,
     patchNode,
+    patchManyNodes,
     deleteNode,
     setNodeDependency,
     setLimit,

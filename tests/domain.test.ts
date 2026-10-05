@@ -6,6 +6,11 @@ import {
   addRequestNode,
   toggleDependency,
 } from "../src/features/graph-editor/graphViewModel";
+import {
+  applyNodeAdjustments,
+  getImpactScope,
+  previewNodeImpact,
+} from "../src/shared/domain/impact";
 
 describe("request dependency graph", () => {
   it("orders a DAG and detects a cycle before simulation", () => {
@@ -98,5 +103,77 @@ describe("request dependency graph", () => {
     expect(next.nodes).toHaveLength(1);
     expect(next.nodes[0]?.durationMs).toBe(400);
     expect(next.nodes[0]?.dependencyIds).toEqual([]);
+  });
+
+  it("classifies impact scope once when downstream paths merge", () => {
+    const make = (
+      id: string,
+      dependencyIds: string[] = [],
+      fallbackNodeId?: string,
+    ) => ({
+      id,
+      name: id,
+      durationMs: 100,
+      jitterMs: 0,
+      dependencyIds,
+      timeoutMs: 500,
+      retryCount: 0,
+      failureRate: 0,
+      ...(fallbackNodeId ? { fallbackNodeId } : {}),
+    });
+    const project = {
+      ...EXAMPLE_PROJECT,
+      nodes: [
+        make("a"),
+        make("b", ["a"]),
+        make("c", ["a"]),
+        make("d", ["b", "c"]),
+      ],
+    };
+    const scope = getImpactScope(project, "a");
+    expect(scope.map((node) => node.nodeId)).toEqual(["b", "c", "d"]);
+    expect(scope.every((node) => node.kind === "always")).toBe(true);
+    expect(new Set(scope.map((node) => node.nodeId)).size).toBe(scope.length);
+  });
+
+  it("separates fallback impact from mandatory downstream impact", () => {
+    const scope = getImpactScope(EXAMPLE_PROJECT, "catalog");
+    const recommend = scope.find((node) => node.nodeId === "recommend");
+    expect(recommend?.kind).toBe("conditional");
+    expect(recommend?.reasons.join(" ")).toContain("失败后调用");
+    expect(scope.filter((node) => node.kind === "conditional")).toHaveLength(1);
+  });
+
+  it("previews a focused uncertainty range without counting shared nodes twice", () => {
+    const preview = previewNodeImpact(EXAMPLE_PROJECT, "catalog");
+    expect(preview.conditionalCount).toBe(1);
+    const recommend = preview.nodes.find((node) => node.nodeId === "recommend");
+    expect(recommend).toBeDefined();
+    expect(recommend?.rangeMetric).toBe("end");
+    expect(recommend?.rangeLowMs).toBeGreaterThan(0);
+    expect(new Set(preview.nodes.map((node) => node.nodeId)).size).toBe(
+      preview.nodes.length,
+    );
+  });
+
+  it("applies a batch only when every node adjustment is valid", () => {
+    const invalid = applyNodeAdjustments(EXAMPLE_PROJECT, [
+      { id: "catalog", patch: { durationMs: 800 } },
+      { id: "profile", patch: { retryCount: 9 } },
+    ]);
+    expect(invalid.project).toEqual(EXAMPLE_PROJECT);
+    expect(invalid.errors.join(" ")).toContain("重试次数");
+
+    const valid = applyNodeAdjustments(EXAMPLE_PROJECT, [
+      { id: "catalog", patch: { durationMs: 800 } },
+      { id: "profile", patch: { durationMs: 500 } },
+    ]);
+    expect(valid.errors).toEqual([]);
+    expect(
+      valid.project.nodes.find((node) => node.id === "catalog")?.durationMs,
+    ).toBe(800);
+    expect(
+      valid.project.nodes.find((node) => node.id === "profile")?.durationMs,
+    ).toBe(500);
   });
 });

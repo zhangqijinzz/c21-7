@@ -7,7 +7,10 @@ import type {
   TimelineEntry,
 } from "./types";
 
-function expectedAttempts(node: RequestNode, mode: SimulationMode): number {
+export function modelRequestDuration(
+  node: RequestNode,
+  mode: SimulationMode,
+): number {
   const jitterFactor = mode === "low" ? 0 : mode === "high" ? 1 : 0.5;
   const serviceMs = Math.min(
     node.durationMs + node.jitterMs * jitterFactor,
@@ -42,7 +45,7 @@ export function simulateProject(
 
   const byId = new Map(project.nodes.map((node) => [node.id, node]));
   const baseDurations = new Map(
-    project.nodes.map((node) => [node.id, expectedAttempts(node, mode)]),
+    project.nodes.map((node) => [node.id, modelRequestDuration(node, mode)]),
   );
   const durations = new Map(baseDurations);
   for (const node of project.nodes) {

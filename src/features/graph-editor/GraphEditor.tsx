@@ -2,13 +2,16 @@ import { useState } from "react";
 import { Plus, GitBranch, CircleHelp } from "lucide-react";
 import type { LatencyProject, RequestNode } from "../../shared/domain/types";
 import type { GraphAnalysis } from "../../shared/domain/graph";
+import type { NodeAdjustment } from "../../shared/domain/impact";
 import NodeInspector from "./NodeInspector";
+import ImpactPreviewPanel from "./ImpactPreviewPanel";
 
 interface Props {
   project: LatencyProject;
   graph: GraphAnalysis;
   onAdd: () => void;
   onPatch: (id: string, patch: Partial<RequestNode>) => void;
+  onPatchMany: (adjustments: NodeAdjustment[]) => string[];
   onDelete: (id: string) => void;
   onDependency: (id: string, dependencyId: string) => void;
 }
@@ -18,6 +21,7 @@ export default function GraphEditor({
   graph,
   onAdd,
   onPatch,
+  onPatchMany,
   onDelete,
   onDependency,
 }: Props) {
@@ -113,13 +117,22 @@ export default function GraphEditor({
           )}
         </div>
         {selected && (
-          <NodeInspector
-            project={project}
-            node={selected}
-            onPatch={onPatch}
-            onDelete={onDelete}
-            onDependency={onDependency}
-          />
+          <div className="inspector-column">
+            <ImpactPreviewPanel
+              key={selected.id}
+              project={project}
+              node={selected}
+              onApply={onPatchMany}
+            />
+            <NodeInspector
+              key={selected.id}
+              project={project}
+              node={selected}
+              onPatch={onPatch}
+              onDelete={onDelete}
+              onDependency={onDependency}
+            />
+          </div>
         )}
       </div>
       {graph.validation.warnings.length > 0 && (
