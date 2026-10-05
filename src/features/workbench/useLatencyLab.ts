@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ProjectRepository } from "../../shared/repositories/projectRepository";
 import type {
   LatencyProject,
+  RequestNode,
   SimulationMode,
   WorkspaceDocument,
 } from "../../shared/domain/types";
@@ -13,11 +14,13 @@ import {
 } from "../projects/projectViewModel";
 import {
   addRequestNode,
+  commitImpactAdjustment,
   patchRequestNode,
   removeRequestNode,
   setConcurrency,
   toggleDependency,
   getGraphAnalysis,
+  type BatchAdjustment,
 } from "../graph-editor/graphViewModel";
 import {
   compareScenarios,
@@ -212,6 +215,30 @@ export function useLatencyLab() {
     [activeProject, editProject],
   );
 
+  const commitImpact = useCallback(
+    (
+      nodeId: string,
+      patch: Partial<RequestNode>,
+      batch?: BatchAdjustment,
+    ) => {
+      if (!activeProject) return { errors: ["当前项目不可用"] };
+      const outcome = commitImpactAdjustment(
+        activeProject,
+        nodeId,
+        patch,
+        batch,
+      );
+      if ("errors" in outcome) {
+        setNotice(outcome.errors[0] ?? "统一调整未生效");
+        return outcome;
+      }
+      setNotice("影响面调整已确认，预算已按新参数重新推演。");
+      editProject(outcome.project);
+      return outcome;
+    },
+    [activeProject, editProject],
+  );
+
   const simulate = useCallback(
     (nextMode = mode) => {
       if (!activeProject) return undefined;
@@ -290,6 +317,7 @@ export function useLatencyLab() {
     deleteNode,
     setNodeDependency,
     setLimit,
+    commitImpact,
     simulate,
     saveSnapshot,
     removeSavedScenario,

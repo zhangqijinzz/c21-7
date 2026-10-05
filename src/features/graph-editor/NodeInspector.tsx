@@ -2,6 +2,11 @@ import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import type { LatencyProject, RequestNode } from "../../shared/domain/types";
 import type { EditableNodeField } from "./graphViewModel";
+import type {
+  BatchAdjustment,
+  ImpactPreview,
+} from "../../shared/domain/impact";
+import ImpactPreviewPanel from "./ImpactPreview";
 
 interface Props {
   project: LatencyProject;
@@ -9,6 +14,12 @@ interface Props {
   onPatch: (id: string, patch: Partial<RequestNode>) => void;
   onDelete: (id: string) => void;
   onDependency: (id: string, dependencyId: string) => void;
+  onCommitImpact: (
+    id: string,
+    patch: Partial<RequestNode>,
+    batch?: BatchAdjustment,
+  ) => { preview?: ImpactPreview; errors?: string[] };
+  appliedPreview?: ImpactPreview;
 }
 
 const numericFields: {
@@ -31,8 +42,25 @@ export default function NodeInspector({
   onPatch,
   onDelete,
   onDependency,
+  onCommitImpact,
+  appliedPreview,
 }: Props) {
   const [pendingDelete, setPendingDelete] = useState(false);
+  const [numericDraft, setNumericDraft] = useState(() =>
+    Object.fromEntries(
+      numericFields.map(({ key }) => [key, String(node[key])]),
+    ) as Record<Exclude<EditableNodeField, "name">, string>,
+  );
+  const draftPatch: Partial<RequestNode> = Object.fromEntries(
+    numericFields.map(({ key }) => [key, Number(numericDraft[key])]),
+  );
+  const draftIsDirty = numericFields.some(
+    ({ key }) => Number(numericDraft[key]) !== node[key],
+  );
+  const updateDraft = (
+    key: Exclude<EditableNodeField, "name">,
+    value: string,
+  ) => setNumericDraft((current) => ({ ...current, [key]: value }));
   return (
     <>
       <aside className="inspector">
@@ -65,9 +93,9 @@ export default function NodeInspector({
                   min="0"
                   max={max}
                   step={step}
-                  value={node[key]}
+                  value={numericDraft[key]}
                   onChange={(event) =>
-                    onPatch(node.id, { [key]: Number(event.target.value) })
+                    updateDraft(key, event.target.value)
                   }
                 />
                 <small>{suffix}</small>
@@ -116,10 +144,18 @@ export default function NodeInspector({
               ))}
           </select>
           <small className="field-note">
-            按最终失败概率加权计入降级请求耗时。
+            数值参数先保存在草稿中；在下方预览影响面并统一确认后才会生效。
           </small>
         </label>
       </aside>
+      <ImpactPreviewPanel
+        project={project}
+        node={node}
+        draft={draftPatch}
+        draftIsDirty={draftIsDirty}
+        appliedPreview={draftIsDirty ? undefined : appliedPreview}
+        onApply={(patch, batch) => onCommitImpact(node.id, patch, batch)}
+      />
       {pendingDelete && (
         <div className="dialog-backdrop" role="presentation">
           <div

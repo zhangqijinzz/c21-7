@@ -1,5 +1,11 @@
 import { analyzeGraph, updateNode } from "../../shared/domain/graph";
 import type { GraphAnalysis } from "../../shared/domain/graph";
+import { applyImpactAdjustment, previewNodeImpact } from "../../shared/domain/impact";
+import type {
+  BatchAdjustment,
+  ImpactPreview,
+} from "../../shared/domain/impact";
+export type { BatchAdjustment, ImpactPreview } from "../../shared/domain/impact";
 import type { LatencyProject, RequestNode } from "../../shared/domain/types";
 
 export type EditableNodeField =
@@ -88,4 +94,22 @@ export function setConcurrency(
   value: number | null,
 ): LatencyProject {
   return { ...project, concurrencyLimit: value, updatedAt: Date.now() };
+}
+
+export function previewImpact(
+  project: LatencyProject,
+  nodeId: string,
+  patch: Partial<RequestNode>,
+  batch?: BatchAdjustment,
+): ImpactPreview | { errors: string[] } {
+  return previewNodeImpact(project, nodeId, patch, batch);
+}
+
+export function commitImpactAdjustment(
+  project: LatencyProject,
+  nodeId: string,
+  patch: Partial<RequestNode>,
+  batch?: BatchAdjustment,
+) {
+  return applyImpactAdjustment(project, nodeId, patch, batch);
 }

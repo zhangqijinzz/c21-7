@@ -2230,6 +2230,318 @@ button:disabled {
 .node-card.cycle-conflict .node-led {
   background: #cc725f;
 }
+.impact-preview {
+  grid-column: 1 / -1;
+  padding: 18px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.impact-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 15px;
+}
+.impact-head h2 {
+  margin: 7px 0 5px;
+  color: #25392f;
+  font: 700 17px var(--display);
+  letter-spacing: -0.4px;
+}
+.impact-head p {
+  margin: 0;
+  color: #8b958d;
+  font-size: 9px;
+  line-height: 1.6;
+}
+.impact-counts {
+  display: flex;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+.impact-counts span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 9px;
+  color: #667564;
+  background: #f3f6ef;
+  border-radius: 99px;
+  font-size: 9px;
+}
+.impact-counts b {
+  color: #2f4b39;
+  font: 700 12px var(--mono);
+}
+.impact-budget-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+  margin-bottom: 12px;
+}
+.impact-budget-grid article {
+  padding: 13px;
+  background: #fbfcf9;
+  border: 1px solid #edf0ea;
+  border-radius: 9px;
+}
+.impact-budget-grid span {
+  color: #8a958c;
+  font-size: 8px;
+}
+.impact-budget-grid strong {
+  display: block;
+  margin: 6px 0 4px;
+  color: #2a3d33;
+  font: 700 20px var(--mono);
+}
+.impact-budget-grid small {
+  color: #a0a9a1;
+  font: 8px var(--mono);
+}
+.impact-budget-delta {
+  background: #f2f7e8 !important;
+  border-color: #e2edcf !important;
+}
+.impact-delta {
+  font: 700 10px var(--mono);
+  white-space: nowrap;
+}
+.impact-delta.good {
+  color: #5e8e42;
+}
+.impact-delta.bad {
+  color: #bd715f;
+}
+.impact-delta.mixed,
+.impact-delta.neutral {
+  color: #8a815b;
+}
+.impact-delta.neutral {
+  color: #a0a8a0;
+  font-weight: 500;
+}
+.impact-applied {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  color: #527241;
+  background: #f0f7e7;
+  border: 1px solid #dcebce;
+  border-radius: 8px;
+  font-size: 9px;
+}
+.impact-applied span {
+  flex: 1;
+}
+.impact-applied b {
+  font: 700 10px var(--mono);
+}
+.impact-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 12px;
+  margin-bottom: 10px;
+  color: #9c5146;
+  background: #fff3f0;
+  border: 1px solid #f7ddd7;
+  border-radius: 8px;
+}
+.impact-error svg {
+  margin-top: 2px;
+  flex: 0 0 auto;
+}
+.impact-error strong {
+  display: block;
+  font-size: 10px;
+}
+.impact-error p {
+  margin: 3px 0 0;
+  font-size: 9px;
+}
+.impact-batch-card {
+  padding: 12px;
+  margin-bottom: 14px;
+  background: #f7f9f2;
+  border: 1px solid #e7edde;
+  border-radius: 9px;
+}
+.impact-batch-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 11px;
+  color: #586a4e;
+}
+.impact-batch-title strong {
+  display: block;
+  font-size: 10px;
+}
+.impact-batch-title small {
+  display: block;
+  margin-top: 3px;
+  color: #929d8e;
+  font-size: 8px;
+}
+.impact-batch-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr 150px auto;
+  gap: 9px;
+  align-items: end;
+}
+.impact-batch-controls label {
+  color: #818c81;
+  font-size: 8px;
+}
+.impact-batch-controls select,
+.impact-batch-controls input {
+  width: 100%;
+  height: 33px;
+  margin-top: 5px;
+  padding: 0 8px;
+  color: #405045;
+  background: #fff;
+  border: 1px solid #e2e7dd;
+  border-radius: 6px;
+  font: 10px var(--mono);
+}
+.impact-batch-value span {
+  height: 33px;
+  display: flex;
+  align-items: center;
+  margin-top: 5px;
+  padding: 0 8px;
+  background: #fff;
+  border: 1px solid #e2e7dd;
+  border-radius: 6px;
+}
+.impact-batch-value input {
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+.impact-batch-value small {
+  color: #9aa39a;
+}
+.impact-table-wrap {
+  border: 1px solid #edf0ea;
+  border-radius: 9px;
+  overflow: hidden;
+}
+.impact-table-heading,
+.impact-row {
+  display: grid;
+  grid-template-columns: minmax(170px, 1.2fr) minmax(160px, 1fr) minmax(160px, 1fr) 105px;
+  gap: 10px;
+  align-items: center;
+}
+.impact-table-heading {
+  min-height: 34px;
+  padding: 0 12px;
+  color: #98a199;
+  background: #fafbf8;
+  border-bottom: 1px solid #edf0ea;
+  font: 8px var(--mono);
+}
+.impact-table-heading > span:last-child {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.certain-dot,
+.conditional-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+.certain-dot {
+  background: #75a446;
+}
+.conditional-dot {
+  background: #d5a25f;
+}
+.impact-table {
+  max-height: 310px;
+  overflow: auto;
+}
+.impact-row {
+  min-height: 54px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #f0f2ee;
+}
+.impact-row:last-child {
+  border-bottom: 0;
+}
+.impact-node-copy {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+.impact-node-copy > i {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 8px;
+  border-radius: 50%;
+}
+.impact-node-copy > i.certain {
+  background: #75a446;
+  box-shadow: 0 0 0 3px #eef5e5;
+}
+.impact-node-copy > i.conditional {
+  background: #d5a25f;
+  box-shadow: 0 0 0 3px #f9f0e2;
+}
+.impact-node-copy strong {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #3c4b41;
+  font-size: 10px;
+}
+.impact-node-copy em {
+  padding: 2px 5px;
+  color: #637a4d;
+  background: #f0f6e7;
+  border-radius: 4px;
+  font: 7px var(--mono);
+  font-style: normal;
+}
+.impact-node-copy small {
+  display: block;
+  margin-top: 3px;
+  color: #9ba49d;
+  font-size: 8px;
+}
+.impact-range span {
+  display: block;
+  margin-bottom: 3px;
+  color: #a0a9a1;
+  font-size: 7px;
+}
+.impact-path-kind {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  color: #6d7b6c;
+  font-size: 8px;
+}
+.impact-footnote {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 12px;
+  color: #8b968a;
+  background: #fafbf8;
+  border-top: 1px solid #edf0ea;
+  font-size: 8px;
+}
 @media (max-width: 1100px) {
   .sidebar {
     width: 210px;
@@ -2251,6 +2563,19 @@ button:disabled {
   }
   .model-note {
     display: none;
+  }
+  .impact-batch-controls {
+    grid-template-columns: 1fr 1fr;
+  }
+  .impact-batch-controls .button {
+    grid-column: 1 / -1;
+  }
+  .impact-table-wrap {
+    overflow-x: auto;
+  }
+  .impact-table-heading,
+  .impact-row {
+    min-width: 650px;
   }
 }
 @media (max-width: 800px) {
@@ -2310,6 +2635,12 @@ button:disabled {
   }
   .inspector {
     order: 2;
+  }
+  .impact-budget-grid {
+    grid-template-columns: 1fr;
+  }
+  .impact-head {
+    flex-direction: column;
   }
   .simulation-toolbar {
     align-items: flex-start;

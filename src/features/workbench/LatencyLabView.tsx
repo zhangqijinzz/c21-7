@@ -146,6 +146,7 @@ export default function LatencyLabView() {
               onPatch={vm.patchNode}
               onDelete={vm.deleteNode}
               onDependency={vm.setNodeDependency}
+              onCommitImpact={vm.commitImpact}
             />
           )}
           {vm.module === "simulation" && (

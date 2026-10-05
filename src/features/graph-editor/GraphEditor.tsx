@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Plus, GitBranch, CircleHelp } from "lucide-react";
 import type { LatencyProject, RequestNode } from "../../shared/domain/types";
 import type { GraphAnalysis } from "../../shared/domain/graph";
+import type { BatchAdjustment, ImpactPreview } from "../../shared/domain/impact";
 import NodeInspector from "./NodeInspector";
 
 interface Props {
@@ -11,6 +12,14 @@ interface Props {
   onPatch: (id: string, patch: Partial<RequestNode>) => void;
   onDelete: (id: string) => void;
   onDependency: (id: string, dependencyId: string) => void;
+  onCommitImpact: (
+    id: string,
+    patch: Partial<RequestNode>,
+    batch?: BatchAdjustment,
+  ) => {
+    preview?: ImpactPreview;
+    errors?: string[];
+  };
 }
 
 export default function GraphEditor({
@@ -20,10 +29,16 @@ export default function GraphEditor({
   onPatch,
   onDelete,
   onDependency,
+  onCommitImpact,
 }: Props) {
   const [selectedId, setSelectedId] = useState("");
+  const [appliedPreview, setAppliedPreview] = useState<ImpactPreview>();
   const selected =
     project.nodes.find((node) => node.id === selectedId) ?? project.nodes[0];
+  const selectNode = (id: string) => {
+    setSelectedId(id);
+    setAppliedPreview(undefined);
+  };
   return (
     <section className="module-page editor-page">
       <div className="module-heading">
@@ -70,7 +85,7 @@ export default function GraphEditor({
                 return (
                   <button
                     key={node.id}
-                    onClick={() => setSelectedId(node.id)}
+                    onClick={() => selectNode(node.id)}
                     className={`node-card ${selected?.id === node.id ? "active" : ""} ${graph.cycle.includes(node.id) ? "cycle-conflict" : ""}`}
                   >
                     <span className="node-rail">
@@ -114,11 +129,18 @@ export default function GraphEditor({
         </div>
         {selected && (
           <NodeInspector
+            key={selected.id}
             project={project}
             node={selected}
             onPatch={onPatch}
             onDelete={onDelete}
             onDependency={onDependency}
+            onCommitImpact={(id, patch, batch) => {
+              const outcome = onCommitImpact(id, patch, batch);
+              if (outcome.preview) setAppliedPreview(outcome.preview);
+              return outcome;
+            }}
+            appliedPreview={appliedPreview}
           />
         )}
       </div>
